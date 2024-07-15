@@ -658,20 +658,14 @@ if __name__ == "__main__":
     start = time.time()-beg
 
     def output_transcript(o, now=None):
-        # output format in stdout is like:
-        # 4186.3606 0 1720 Takhle to je
-        # - the first three words are:
-        #    - emission time from beginning of processing, in milliseconds
-        #    - beg and end timestamp of the text segment, as estimated by Whisper model. The timestamps are not accurate, but they're useful anyway
-        # - the next words: segment transcript
-        if now is None:
-            now = time.time()-start
+        # if now is None, calculate it based on the start time
+        if now is None: now = time.time() - start
+        
+        # if there is a valid transcript (o[0] is not None), print the transcript text only
         if o[0] is not None:
-            print("%1.4f %1.0f %1.0f %s" % (now*1000, o[0]*1000,o[1]*1000,o[2]),file=logfile,flush=True)
-            print("%1.4f %1.0f %1.0f %s" % (now*1000, o[0]*1000,o[1]*1000,o[2]),flush=True)
-        else:
-            # No text, so no output
-            pass
+            print("%s" % (o[2]), file=logfile, flush=True, end='')  # log the text to the logfile
+            print("%s" % (o[2]), flush=True, end='')  # print the text to stdout
+        else: pass
 
     if args.offline: ## offline mode processing (for testing/debugging)
         a = load_audio(audio_path)
